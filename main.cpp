@@ -38,7 +38,7 @@ Resource* loadDataFromFile(const string& filename, int& count) {
     while (getline(fin, tempLine)) {
         count++;
     }
-    
+
     if (count == 0) {
         cout << "Файл пуст." << endl;
         fin.close();
@@ -47,11 +47,11 @@ Resource* loadDataFromFile(const string& filename, int& count) {
 
     // Выделяем динамический массив
     Resource* arr = new Resource[count];
-    
+
     // Возвращаемся в начало файла и читаем данные
     fin.clear();
     fin.seekg(0, ios::beg);
-    
+
     for (int i = 0; i < count; ++i) {
         fin >> arr[i].id >> arr[i].name >> arr[i].type >> arr[i].url >> arr[i].size >> arr[i].year;
     }
@@ -67,19 +67,19 @@ void printTable(Resource* arr, int count) {
         return;
     }
     cout << "\n" << string(80, '-') << "\n";
-    cout << left << setw(5) << "ID" 
-         << setw(20) << "Название" 
-         << setw(15) << "Тип" 
-         << setw(20) << "URL" 
-         << setw(10) << "Размер" 
+    cout << left << setw(5) << "ID"
+         << setw(20) << "Название"
+         << setw(15) << "Тип"
+         << setw(20) << "URL"
+         << setw(10) << "Размер"
          << setw(6) << "Год" << "\n";
     cout << string(80, '-') << "\n";
     for (int i = 0; i < count; ++i) {
-        cout << left << setw(5) << arr[i].id 
-             << setw(20) << arr[i].name 
-             << setw(15) << arr[i].type 
-             << setw(20) << arr[i].url 
-             << setw(10) << arr[i].size 
+        cout << left << setw(5) << arr[i].id
+             << setw(20) << arr[i].name
+             << setw(15) << arr[i].type
+             << setw(20) << arr[i].url
+             << setw(10) << arr[i].size
              << setw(6) << arr[i].year << "\n";
     }
     cout << string(80, '-') << "\n";
@@ -90,7 +90,7 @@ void editRecord(Resource* arr, int count) {
     int searchId;
     cout << "Введите ID записи для редактирования: ";
     cin >> searchId;
-    
+
     for (int i = 0; i < count; ++i) {
         if (arr[i].id == searchId) {
             cout << "Текущее название: " << arr[i].name << ". Введите новое: ";
@@ -109,7 +109,7 @@ void calculateStats(Resource* arr, int count) {
     if (count == 0) return;
     float totalSize = 0;
     int modernCount = 0;
-    
+
     for (int i = 0; i < count; ++i) {
         totalSize += arr[i].size;
         if (arr[i].year > 2020) {
@@ -126,13 +126,13 @@ void saveToFile(Resource* arr, int count) {
     string newFilename;
     cout << "Введите имя нового файла (например, newdata.txt): ";
     cin >> newFilename;
-    
+
     ofstream fout(newFilename);
     if (!fout.is_open()) {
         cout << "Ошибка создания файла!\n";
         return;
     }
-    
+
     for (int i = 0; i < count; ++i) {
         fout << arr[i].id << " " << arr[i].name << " " << arr[i].type << " " 
              << arr[i].url << " " << arr[i].size << " " << arr[i].year << "\n";
@@ -150,7 +150,7 @@ void addRecord(Resource*& arr, int& count) {
     cout << "Введите ID, Название, Тип, URL, Размер, Год (через пробел): ";
     cin >> newArr[count].id >> newArr[count].name >> newArr[count].type 
         >> newArr[count].url >> newArr[count].size >> newArr[count].year;
-        
+
     delete[] arr; // Удаляем старый массив
     arr = newArr; // Теперь arr указывает на новый
     count++;
@@ -160,7 +160,7 @@ void addRecord(Resource*& arr, int& count) {
 // === ГЛАВНАЯ ФУНКЦИЯ ===
 int main() {
     setlocale(LC_ALL, "Russian"); // Для русского языка в консоли
-    
+
     // Создадим исходный файл программно, чтобы у тебя сразу были данные
     ofstream testFile("data.txt");
     testFile << "1 Wikipedia Website https://wikipedia.org 1500 2001\n";
@@ -183,7 +183,7 @@ int main() {
         cout << "6. Сохранить в новый файл\n";
         cout << "0. Выход\n";
         cout << "Выберите действие: ";
-        
+
         cin >> choice;
         if (cin.fail()) { clearInput(); continue; }
 

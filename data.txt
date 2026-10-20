@@ -1,0 +1,4 @@
+1 Wikipedia Website https://wikipedia.org 1500 2001
+2 GTA_V Game https://rockstar.com 80000 2013
+3 Stepik Course https://stepik.org 50 2022
+4 GitHub Platform https://github.com 2000 2008
