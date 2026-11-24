@@ -2,22 +2,21 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-#include <vector>
 #include <limits>
 
 using namespace std;
 
 // === 1. СТРУКТУРА (Вариант 22: Электронные ресурсы) ===
 struct Resource {
-    int id;             // Числовое 1
-    string name;        // Строковое 1
-    string type;        // Строковое 2
-    string url;         // Строковое 3
-    float size;         // Числовое 2 (дробное)
-    int year;           // Числовое 3
+    int id;
+    string name;
+    string type;
+    string url;
+    float size;
+    int year;
 };
 
-// Вспомогательная функция для очистки ввода (чтобы cin не зацикливался при ошибках)
+// Вспомогательная функция для очистки ввода
 void clearInput() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -32,11 +31,10 @@ Resource* loadDataFromFile(const string& filename, int& count) {
         return nullptr;
     }
 
-    // Сначала считаем количество строк в файле, чтобы выделить память
     count = 0;
     string tempLine;
     while (getline(fin, tempLine)) {
-        count++;
+        if (!tempLine.empty()) count++;
     }
 
     if (count == 0) {
@@ -45,15 +43,14 @@ Resource* loadDataFromFile(const string& filename, int& count) {
         return nullptr;
     }
 
-    // Выделяем динамический массив
     Resource* arr = new Resource[count];
 
-    // Возвращаемся в начало файла и читаем данные
     fin.clear();
     fin.seekg(0, ios::beg);
 
     for (int i = 0; i < count; ++i) {
-        fin >> arr[i].id >> arr[i].name >> arr[i].type >> arr[i].url >> arr[i].size >> arr[i].year;
+        fin >> arr[i].id >> arr[i].name >> arr[i].type
+            >> arr[i].url >> arr[i].size >> arr[i].year;
     }
     fin.close();
     cout << "Успешно загружено " << count << " записей." << endl;
@@ -66,30 +63,35 @@ void printTable(Resource* arr, int count) {
         cout << "База данных пуста.\n";
         return;
     }
-    cout << "\n" << string(80, '-') << "\n";
-    cout << left << setw(5) << "ID"
-         << setw(20) << "Название"
-         << setw(15) << "Тип"
-         << setw(20) << "URL"
-         << setw(10) << "Размер"
-         << setw(6) << "Год" << "\n";
-    cout << string(80, '-') << "\n";
+    cout << "\n" << string(90, '-') << "\n";
+    cout << left << setw(5)  << "ID"
+                 << setw(20) << "Название"
+                 << setw(15) << "Тип"
+                 << setw(25) << "URL"
+                 << setw(10) << "Размер"
+                 << setw(6)  << "Год" << "\n";
+    cout << string(90, '-') << "\n";
     for (int i = 0; i < count; ++i) {
-        cout << left << setw(5) << arr[i].id
-             << setw(20) << arr[i].name
-             << setw(15) << arr[i].type
-             << setw(20) << arr[i].url
-             << setw(10) << arr[i].size
-             << setw(6) << arr[i].year << "\n";
+        cout << left << setw(5)  << arr[i].id
+                     << setw(20) << arr[i].name
+                     << setw(15) << arr[i].type
+                     << setw(25) << arr[i].url
+                     << setw(10) << arr[i].size
+                     << setw(6)  << arr[i].year << "\n";
     }
-    cout << string(80, '-') << "\n";
+    cout << string(90, '-') << "\n";
 }
 
 // === 4. ФУНКЦИЯ КОРРЕКТИРОВКИ ДАННЫХ ===
 void editRecord(Resource* arr, int count) {
+    if (arr == nullptr || count == 0) {
+        cout << "База данных пуста, нечего редактировать.\n";
+        return;
+    }
     int searchId;
     cout << "Введите ID записи для редактирования: ";
     cin >> searchId;
+    if (cin.fail()) { clearInput(); cout << "Некорректный ID.\n"; return; }
 
     for (int i = 0; i < count; ++i) {
         if (arr[i].id == searchId) {
@@ -106,7 +108,10 @@ void editRecord(Resource* arr, int count) {
 
 // === 5. ФУНКЦИЯ ВЫЧИСЛЕНИЯ ===
 void calculateStats(Resource* arr, int count) {
-    if (count == 0) return;
+    if (arr == nullptr || count == 0) {
+        cout << "База данных пуста, вычисления невозможны.\n";
+        return;
+    }
     float totalSize = 0;
     int modernCount = 0;
 
@@ -123,6 +128,10 @@ void calculateStats(Resource* arr, int count) {
 
 // === 6. ФУНКЦИЯ СОХРАНЕНИЯ В НОВЫЙ ФАЙЛ ===
 void saveToFile(Resource* arr, int count) {
+    if (arr == nullptr || count == 0) {
+        cout << "База данных пуста, сохранять нечего.\n";
+        return;
+    }
     string newFilename;
     cout << "Введите имя нового файла (например, newdata.txt): ";
     cin >> newFilename;
@@ -134,34 +143,40 @@ void saveToFile(Resource* arr, int count) {
     }
 
     for (int i = 0; i < count; ++i) {
-        fout << arr[i].id << " " << arr[i].name << " " << arr[i].type << " " 
+        fout << arr[i].id << " " << arr[i].name << " " << arr[i].type << " "
              << arr[i].url << " " << arr[i].size << " " << arr[i].year << "\n";
     }
     fout.close();
     cout << "Данные успешно сохранены в файл " << newFilename << "\n";
 }
 
-// Дополнительная функция для добавления (требуется по заданию)
+// Дополнительная функция для добавления
 void addRecord(Resource*& arr, int& count) {
     Resource* newArr = new Resource[count + 1];
     for (int i = 0; i < count; ++i) {
         newArr[i] = arr[i];
     }
     cout << "Введите ID, Название, Тип, URL, Размер, Год (через пробел): ";
-    cin >> newArr[count].id >> newArr[count].name >> newArr[count].type 
+    cin >> newArr[count].id >> newArr[count].name >> newArr[count].type
         >> newArr[count].url >> newArr[count].size >> newArr[count].year;
+    if (cin.fail()) {
+        clearInput();
+        delete[] newArr;
+        cout << "Ошибка ввода, запись не добавлена.\n";
+        return;
+    }
 
-    delete[] arr; // Удаляем старый массив
-    arr = newArr; // Теперь arr указывает на новый
+    delete[] arr;
+    arr = newArr;
     count++;
     cout << "Запись добавлена.\n";
 }
 
 // === ГЛАВНАЯ ФУНКЦИЯ ===
 int main() {
-    setlocale(LC_ALL, "Russian"); // Для русского языка в консоли
+    setlocale(LC_ALL, "Russian");
 
-    // Создадим исходный файл программно, чтобы у тебя сразу были данные
+    // Создадим исходный файл программно
     ofstream testFile("data.txt");
     testFile << "1 Wikipedia Website https://wikipedia.org 1500 2001\n";
     testFile << "2 GTA_V Game https://rockstar.com 80000 2013\n";
@@ -189,7 +204,7 @@ int main() {
 
         switch (choice) {
             case 1:
-                if (db != nullptr) delete[] db;
+                if (db != nullptr) { delete[] db; db = nullptr; }
                 db = loadDataFromFile("data.txt", count);
                 break;
             case 2:
@@ -216,15 +231,8 @@ int main() {
     } while (choice != 0);
 
     if (db != nullptr) {
-        delete[] db; // Очистка памяти перед выходом
+        delete[] db;
     }
     return 0;
 }
-
-
-
-
-
-
-
 
